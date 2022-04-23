@@ -313,13 +313,20 @@ const createParticle = () => {
     depth = 10 + Math.random() * 40;
     
     // CUBO
-    if (random < .5){
+    if (random < .33){
       geometryCore = createCube(width, height, depth);
     }
     // PIRÂMIDE
-    else{
+    else if (random < .66){
       geometryCore = createPyramid(width, height, depth);
     }
+    // ESFERA, mas com a quantidade de segmentos randomizado
+    else{
+        let radius = 5 + Math.random() * 40;
+        let horizontalSegments = 2 + Math.floor(Math.random() * 2);
+        let verticalSegments = 2 + Math.floor(Math.random() * 2);
+        geometryCore = new THREE.SphereGeometry(radius, horizontalSegments, verticalSegments);
+      }
     
     let materialCore = new THREE.MeshLambertMaterial({
       color: particleColor
