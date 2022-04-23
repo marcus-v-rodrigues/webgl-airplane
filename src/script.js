@@ -110,25 +110,142 @@ const createLight = () => {
     scene.add(shadowLight);
 }
 
+const createCube = (width, height, depth) => {
+    const cube = new THREE.BufferGeometry();
+    
+    // Divisão das medidas pela metade para que seja inserido nos vértices
+    const widthVertex = width / 2,
+          heightVertex = height / 2,
+          depthVertex = depth / 2;
+
+    // Array de vértices
+    const vertices = [
+        // Frente
+        { pos: [-widthVertex, -heightVertex,  depthVertex], norm: [ 0,  0,  1], uv: [0, 1], },
+        { pos: [ widthVertex, -heightVertex,  depthVertex], norm: [ 0,  0,  1], uv: [1, 1], },
+        { pos: [-widthVertex,  heightVertex,  depthVertex], norm: [ 0,  0,  1], uv: [0, 0], },
+
+        { pos: [-widthVertex,  heightVertex,  depthVertex], norm: [ 0,  0,  1], uv: [0, 0], },
+        { pos: [ widthVertex, -heightVertex,  depthVertex], norm: [ 0,  0,  1], uv: [1, 1], },
+        { pos: [ widthVertex,  heightVertex,  depthVertex], norm: [ 0,  0,  1], uv: [1, 0], },
+        // Direita
+        { pos: [ widthVertex, -heightVertex,  depthVertex], norm: [ 1,  0,  0], uv: [0, 1], },
+        { pos: [ widthVertex, -heightVertex, -depthVertex], norm: [ 1,  0,  0], uv: [1, 1], },
+        { pos: [ widthVertex,  heightVertex,  depthVertex], norm: [ 1,  0,  0], uv: [0, 0], },
+
+        { pos: [ widthVertex,  heightVertex,  depthVertex], norm: [ 1,  0,  0], uv: [0, 0], },
+        { pos: [ widthVertex, -heightVertex, -depthVertex], norm: [ 1,  0,  0], uv: [1, 1], },
+        { pos: [ widthVertex,  heightVertex, -depthVertex], norm: [ 1,  0,  0], uv: [1, 0], },
+        // Atrás
+        { pos: [ widthVertex, -heightVertex, -depthVertex], norm: [ 0,  0, -1], uv: [0, 1], },
+        { pos: [-widthVertex, -heightVertex, -depthVertex], norm: [ 0,  0, -1], uv: [1, 1], },
+        { pos: [ widthVertex,  heightVertex, -depthVertex], norm: [ 0,  0, -1], uv: [0, 0], },
+
+        { pos: [ widthVertex,  heightVertex, -depthVertex], norm: [ 0,  0, -1], uv: [0, 0], },
+        { pos: [-widthVertex, -heightVertex, -depthVertex], norm: [ 0,  0, -1], uv: [1, 1], },
+        { pos: [-widthVertex,  heightVertex, -depthVertex], norm: [ 0,  0, -1], uv: [1, 0], },
+        // Esquerda
+        { pos: [-widthVertex, -heightVertex, -depthVertex], norm: [-1,  0,  0], uv: [0, 1], },
+        { pos: [-widthVertex, -heightVertex,  depthVertex], norm: [-1,  0,  0], uv: [1, 1], },
+        { pos: [-widthVertex,  heightVertex, -depthVertex], norm: [-1,  0,  0], uv: [0, 0], },
+
+        { pos: [-widthVertex,  heightVertex, -depthVertex], norm: [-1,  0,  0], uv: [0, 0], },
+        { pos: [-widthVertex, -heightVertex,  depthVertex], norm: [-1,  0,  0], uv: [1, 1], },
+        { pos: [-widthVertex,  heightVertex,  depthVertex], norm: [-1,  0,  0], uv: [1, 0], },
+        // Topo
+        { pos: [ widthVertex,  heightVertex, -depthVertex], norm: [ 0,  1,  0], uv: [0, 1], },
+        { pos: [-widthVertex,  heightVertex, -depthVertex], norm: [ 0,  1,  0], uv: [1, 1], },
+        { pos: [ widthVertex,  heightVertex,  depthVertex], norm: [ 0,  1,  0], uv: [0, 0], },
+
+        { pos: [ widthVertex,  heightVertex,  depthVertex], norm: [ 0,  1,  0], uv: [0, 0], },
+        { pos: [-widthVertex,  heightVertex, -depthVertex], norm: [ 0,  1,  0], uv: [1, 1], },
+        { pos: [-widthVertex,  heightVertex,  depthVertex], norm: [ 0,  1,  0], uv: [1, 0], },
+        // Embaixo
+        { pos: [ widthVertex, -heightVertex,  depthVertex], norm: [ 0, -1,  0], uv: [0, 1], },
+        { pos: [-widthVertex, -heightVertex,  depthVertex], norm: [ 0, -1,  0], uv: [1, 1], },
+        { pos: [ widthVertex, -heightVertex, -depthVertex], norm: [ 0, -1,  0], uv: [0, 0], },
+
+        { pos: [ widthVertex, -heightVertex, -depthVertex], norm: [ 0, -1,  0], uv: [0, 0], },
+        { pos: [-widthVertex, -heightVertex,  depthVertex], norm: [ 0, -1,  0], uv: [1, 1], },
+        { pos: [-widthVertex, -heightVertex, -depthVertex], norm: [ 0, -1,  0], uv: [1, 0], },
+    ];
+    
+    const positions = []; // Matriz de pontos do cubo
+    const normals = []; // Matriz de vetores normais do cubo
+    const uvs = []; // Matriz do mapeamento UV do cubo
+
+    for (const vertex of vertices) { // Atribuição dos valores o array de objeto para os arrays separados
+        positions.push(...vertex.pos);
+        normals.push(...vertex.norm);
+        uvs.push(...vertex.uv);
+    }
+
+    const positionNumComponents = 3; // Quantidade de valores que formam um vértíce
+    const normalNumComponents = 3; // Quantidade de valores que formam um vetor normal
+    const uvNumComponents = 2; // Quantidade de valores que o mapeamento UV do vértice
+
+    // Atribuindo os valores dos atributos para a formação da estrutura do cubo
+    cube.setAttribute('position', new THREE.BufferAttribute(new Float32Array(positions), positionNumComponents));
+    cube.setAttribute('normal', new THREE.BufferAttribute(new Float32Array(normals), normalNumComponents));
+    cube.setAttribute('uv', new THREE.BufferAttribute(new Float32Array(uvs), uvNumComponents));
+
+    return cube;
+}
+
+const createPyramid = (width, height, depth) => {
+    const pyramid = new THREE.BufferGeometry();
+
+    // Divisão das medidas pela metade para que seja inserido nos vértices
+    const widthVertex = width / 2,
+          heightVertex = height / 2,
+          depthVertex = depth / 2;
+
+    // Array de vértices
+    let positions = [
+        0, heightVertex, 0,                     //0
+        -widthVertex,-heightVertex,-depthVertex,//1
+        -widthVertex,-heightVertex, depthVertex,//2
+         widthVertex,-heightVertex, depthVertex,//3
+         widthVertex,-heightVertex,-depthVertex //4
+    ];
+    
+    const positionNumComponents = 3; // Quantidade de valores que formam um vértíce
+    // Atribuindo os valores dos atributos para a formação da estrutura do cubo
+    pyramid.setAttribute('position', new THREE.BufferAttribute(new Float32Array(positions), positionNumComponents));
+    
+    // Determinando qual vértice se conecta entre si, para não haver a necessidade de vértices repetidos
+    pyramid.setIndex([
+        0, 1, 2,
+        0, 2, 3, 
+        0, 3, 4,
+        0, 4, 1,
+        1, 3, 2,
+        1, 4, 3
+    ]);
+    pyramid.computeVertexNormals(); // Determina os vetores normais, calculando a média das normais das faces
+
+    return pyramid;
+}
+
 const createPlane = () => {
     // Um grupo que vai conter cada parte do avião
     plane = new THREE.Group();
     
     // CORPO 
-    let bodyGeom = new THREE.BoxGeometry(240, 60, 60);
-       let bodyMat = new THREE.MeshLambertMaterial({
+    let bodyGeom = createCube(240, 60, 60);
+    let bodyMat = new THREE.MeshLambertMaterial({
       color: 0xC4CECE
     });
     bodyPlane = new THREE.Mesh(bodyGeom, bodyMat);
     
     // ASA
-    let wingGeom = new THREE.CylinderGeometry(0, 60, 60, 4);
+    let wingGeom = createPyramid(60, 60, 60);
     let wingMat = new THREE.MeshLambertMaterial({
       color: 0xDC143C	
     });
 
     wingsPlane = new THREE.Mesh(wingGeom, wingMat);
-    wingsPlane.scale.set(4,1,.1);
+    wingsPlane.scale.set(8, 1, .1);
     wingsPlane.rotation.x = halfPI;
     wingsPlane.rotation.z = -halfPI;
     wingsPlane.position.x = 0; 
@@ -137,21 +254,21 @@ const createPlane = () => {
 
     // LEME
     rudderPlane = new THREE.Mesh(wingGeom, wingMat);
-    rudderPlane.scale.set(.8,1,.1);
+    rudderPlane.scale.set(1.5, 1, .1);
     rudderPlane.position.x = -90; 
     rudderPlane.position.y = 30; 
     rudderPlane.rotation.z = -halfPI;
 
     // ESTABILIZADOR
     stabilizerPlane = new THREE.Mesh(wingGeom, wingMat);
-    stabilizerPlane.scale.set(2,1,.1);
+    stabilizerPlane.scale.set(4, 1, .1);
     stabilizerPlane.position.x = -90; 
     stabilizerPlane.position.y = -10; 
     stabilizerPlane.rotation.x = halfPI;
     stabilizerPlane.rotation.z = -halfPI;
     
     // JANELA
-    let windowGeom = new THREE.BoxGeometry(30, 30, 30);
+    let windowGeom = createCube(30, 30, 30);
     let windowMat = new THREE.MeshLambertMaterial({
       color: 0x00ABFF
     });
@@ -160,7 +277,7 @@ const createPlane = () => {
     windowPlane.position.y = 40;
 
     //HÉLICE
-    let propellerGeom = new THREE.BoxGeometry(5, 120, 15);
+    let propellerGeom = createCube(5, 120, 15);
     let propeller = new THREE.MeshLambertMaterial({
         color: 0xDC143C	
     });
@@ -188,34 +305,24 @@ const createPlane = () => {
 
 // PARTICULAS
 const createParticle = () => {
-    let particle, geometryCore, radius, width, height, depth, horizontalSegments, verticalSegments;
-    
-    // 3 formas são usadas e escolhidas de forma randômica
+    let particle, geometryCore, width, height, depth
+    // 2 formas são usadas e escolhidas de forma randômica
     let random = Math.random();
+    width = 10 + Math.random() * 40;
+    height = 10 + Math.random() * 40;
+    depth = 10 + Math.random() * 40;
     
     // CUBO
-    if (random < .33){
-      width = 10 + Math.random() * 30;
-      height = 10 + Math.random() * 30;
-      depth = 10 + Math.random() * 30;
-      geometryCore = new THREE.BoxGeometry(width,height,depth);
+    if (random < .5){
+      geometryCore = createCube(width, height, depth);
     }
-    // TETRAEDRO
-    else if (random < .66){
-      radius = 10 + Math.random()*20;
-      geometryCore = new THREE.TetrahedronGeometry(radius);
-    }
-    // ESFERA, mas com a quantidade de segmentos randomizado
+    // PIRÂMIDE
     else{
-      radius = 5 + Math.random() * 30;
-      horizontalSegments = 2 + Math.floor(Math.random()*2);
-      verticalSegments = 2 + Math.floor(Math.random()*2);
-      geometryCore = new THREE.SphereGeometry(radius, horizontalSegments, verticalSegments);
+      geometryCore = createPyramid(width, height, depth);
     }
     
     let materialCore = new THREE.MeshLambertMaterial({
-      color: particleColor,
-      shading: THREE.FlatShading
+      color: particleColor
     });
 
     particle = new THREE.Mesh(geometryCore, materialCore);
@@ -359,4 +466,4 @@ createLight();
 createPlane();
 createParticle();
 loop();
-setInterval(flyParticle, 40); // Lança uma nova partícula à cada 40ms
+setInterval(flyParticle, 20); // Lança uma nova partícula à cada 20ms
