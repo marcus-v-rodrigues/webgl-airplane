@@ -115,8 +115,8 @@ const doRotationX = (theta) => {
 
 // Rotação eixo Y
 const doRotationY = (theta) => {
-  var c = Math.cos(this.theta);
-  var s = Math.sin(this.theta);
+  var c = Math.cos(theta);
+  var s = Math.sin(theta);
 
   const rotationMatrix = new THREE.Matrix4();
   rotationMatrix.set(
@@ -130,8 +130,8 @@ const doRotationY = (theta) => {
 
 // Rotação eixo Z
 const doRotationZ = (theta) => {
-  var c = Math.cos(this.theta);
-  var s = Math.sin(this.theta);
+  var c = Math.cos(theta);
+  var s = Math.sin(theta);
 
   const rotationMatrix = new THREE.Matrix4();
   rotationMatrix.set(
@@ -455,8 +455,13 @@ const createPlane = () => {
 
   wingsPlane = new THREE.Mesh(wingGeom, wingMat);
   wingsPlane.scale.set(8, 1, 0.1);
-  wingsPlane.rotation.x = halfPI;
-  wingsPlane.rotation.z = -halfPI;
+
+  //wingsPlane.rotation.x = halfPI;
+  //wingsPlane.rotation.z = -halfPI;
+
+  wingsPlane.applyMatrix4(doRotationX(halfPI));
+  wingsPlane.applyMatrix4(doRotationY(halfPI));
+
   wingsPlane.position.x = 0;
   wingsPlane.position.y = 0;
   wingsPlane.position.z = 0;
@@ -494,7 +499,8 @@ const createPlane = () => {
   prop1.position.x = 122;
 
   let prop2 = prop1.clone();
-  prop2.rotation.x = Math.PI / 2;
+  // prop2.rotation.x = Math.PI / 2;
+  prop2.applyMatrix4(doRotationX(Math.PI / 2));
 
   propellerPlane = new THREE.Group();
 
