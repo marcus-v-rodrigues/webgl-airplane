@@ -52,7 +52,7 @@ let planeFastColor = {
 // Como as partículas são recicláveis, é usado duas matrizes para armazená-las
 let flyingParticles = [], // flyingParticles é usada para armazenar as particulas que estão em movimento na tela
     waitingParticles = [], // waitingParticles é usada para armazenar as particulas que não estão sendo usadas, até quando forem necessárias
-    maxParticlesZ = 600, // Posição z máxima para uma particula
+    maxParticlesZ = 800, // Posição z máxima para uma particula
     particleColor = 0xF4FAFC; //Branco nuvem
 
 // VELOCIDADE
@@ -540,7 +540,7 @@ const createPlane = () => {
 // PARTICULAS
 const createParticle = () => {
     let particle, geometryCore, width, height, depth
-    // 2 formas são usadas e escolhidas de forma randômica
+    // 3 formas são usadas e escolhidas de forma randômica
     let random = Math.random();
     width = 10 + Math.random() * 40;
     height = 10 + Math.random() * 40;
@@ -581,11 +581,12 @@ const getParticle = () => {
 const flyParticle = () => {
     let particle = getParticle();
     // Seleciona a posição da particula de forma randômica, mas a inicia fora do campo de visão e a dá uma escala também randômica 
-    particle.position.x = xLimit;
-    particle.position.y = Math.random() * yLimit * 2 - yLimit;
-    particle.position.z = Math.random() * maxParticlesZ;
-    let scale = .2 + Math.random();
-    particle.scale.set(scale, scale, scale);
+    let x = xLimit,
+        y = Math.random() * yLimit * 2 - yLimit,
+        z = Math.random() * maxParticlesZ,
+        scale = .2 + Math.random();
+    particle.applyMatrix4(doTranslation(x, y, z));
+    particle.applyMatrix4(doScale(scale, scale, scale));
     flyingParticles.push(particle);
     scene.add(particle);
 }
@@ -598,7 +599,7 @@ const init = () => {
     aspectRatio = sizes.width / sizes.height;
     fieldOfView = 60;
     nearPlane = 1; // A câmera não vera nenhum objeto colocado à frente desse plano
-    farPlane = 2000; // A câmera não vera nenhum objeto além desse plano
+    farPlane = 3000; // A câmera não vera nenhum objeto além desse plano
     camera = new THREE.PerspectiveCamera(
         fieldOfView,
         aspectRatio,
@@ -727,23 +728,15 @@ const loop = () => {
         scaleParticle = new THREE.Vector3();
 
         plane.matrix.decompose(translationParticle, rotationQuaternionParticle, scaleParticle);
-        /*
-        particle.applyMatrix4(doRotationY((1 / scaleParticle.x) * .05));
-        particle.applyMatrix4(doRotationX((1 / scaleParticle.x) * .05));
-        particle.applyMatrix4(doRotationX((1 / scaleParticle.x) * .05));
-        particle.applyMatrix4(doTranslation(x, y, -translationParticle.z));
-        */
-
+        
         let x = -10 - (1 / scaleParticle.x) * speed.x * .2;
-        let y = (1 / scaleParticle.x) * speed.y * .2;
-        let rotation = (1 / scaleParticle.x) * .05;
+        let y = (1 / scaleParticle.x) * speed.y;
+        let rotation = (1 / scaleParticle.x) / 200;
 
-        particle.rotation.y += rotation;
-        particle.rotation.x += rotation;
-        particle.rotation.z += rotation;
-        particle.position.x += x;
-        particle.position.y += y;
-     
+        particle.applyMatrix4(doRotationX(rotation));
+        particle.applyMatrix4(doRotationY(rotation));
+        particle.applyMatrix4(doRotationX(rotation));
+        particle.applyMatrix4(doTranslation(x, y, 0));
 
         if (translationParticle.x < -xLimit - 80) { // Verifica se a partícula está fora do campo de visão
             scene.remove(particle);
