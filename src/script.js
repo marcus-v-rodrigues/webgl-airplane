@@ -52,7 +52,7 @@ let planeFastColor = {
 // Como as partículas são recicláveis, é usado duas matrizes para armazená-las
 let flyingParticles = [], // flyingParticles é usada para armazenar as particulas que estão em movimento na tela
     waitingParticles = [], // waitingParticles é usada para armazenar as particulas que não estão sendo usadas, até quando forem necessárias
-    maxParticlesZ = 800, // Posição z máxima para uma particula
+    maxParticlesZ = 600, // Posição z máxima para uma particula
     particleColor = 0xF4FAFC; //Branco nuvem
 
 // VELOCIDADE
@@ -69,6 +69,7 @@ let mousePos = {
 };
 let halfPI = Math.PI / 2;
 
+// HANDLERS E AUXILIARES
 const onWindowResize = () => {
     sizes.height = window.innerHeight;
     sizes.width = window.innerWidth;
@@ -80,7 +81,7 @@ const onWindowResize = () => {
     // Recalculando os limites
     let ang = (fieldOfView / 2) * Math.PI / 180;
     yLimit = (camera.position.z + maxPartcilesZ) * Math.tan(ang);
-    xLimit = yLimit * camera.aspect;
+    xLimit = yLimit * camera.aspect * 2;
 }
 
 const handleMouseMove = (event) => {
@@ -542,9 +543,9 @@ const createParticle = () => {
     let particle, geometryCore, width, height, depth
     // 3 formas são usadas e escolhidas de forma randômica
     let random = Math.random();
-    width = 10 + Math.random() * 40;
-    height = 10 + Math.random() * 40;
-    depth = 10 + Math.random() * 40;
+    width = 30 + Math.random() * 40;
+    height = 30 + Math.random() * 40;
+    depth = 30 + Math.random() * 40;
 
     // CUBO
     if (random < .33) {
@@ -583,7 +584,7 @@ const flyParticle = () => {
     // Seleciona a posição da particula de forma randômica, mas a inicia fora do campo de visão e a dá uma escala também randômica 
     let x = xLimit,
         y = Math.random() * yLimit * 2 - yLimit,
-        z = Math.random() * maxParticlesZ,
+        z = Math.random() * maxParticlesZ * 2 + 1,
         scale = .2 + Math.random();
     particle.applyMatrix4(doTranslation(x, y, z));
     particle.applyMatrix4(doScale(scale, scale, scale));
@@ -628,7 +629,7 @@ const init = () => {
     // Calcula a posição y máxima vista pela câmera, relacionada a posição maxParticlesZ. Eu começo calculando o limite y, pois fieldOfView é um campo de visão vertical. Só então que eu calculo o limite x.
     yLimit = (camera.position.z + maxParticlesZ) * Math.tan(ang);
     // Calcula a posição y máxima vista pela câmera, relacionada ao limite de y
-    xLimit = yLimit * camera.aspect;
+    xLimit = yLimit * camera.aspect * 2;
 
     // Pré-calcula o centro da tela. Usado para atualizar a velocidade dependendo da posição do mouse
     windowHalfX = sizes.width / 2;
@@ -729,16 +730,15 @@ const loop = () => {
 
         plane.matrix.decompose(translationParticle, rotationQuaternionParticle, scaleParticle);
         
-        let x = -10 - (1 / scaleParticle.x) * speed.x * .2;
+        let x = -10 - (1 / scaleParticle.x) * speed.x * .4;
         let y = (1 / scaleParticle.x) * speed.y;
         let rotation = (1 / scaleParticle.x) / 200;
 
-        particle.applyMatrix4(doRotationX(rotation));
+        particle.applyMatrix4(doRotationX(rotation*2));
         particle.applyMatrix4(doRotationY(rotation));
-        particle.applyMatrix4(doRotationX(rotation));
         particle.applyMatrix4(doTranslation(x, y, 0));
 
-        if (translationParticle.x < -xLimit - 80) { // Verifica se a partícula está fora do campo de visão
+        if (translationParticle.x < -xLimit / 2) { // Verifica se a partícula está fora do campo de visão
             scene.remove(particle);
             waitingParticles.push(flyingParticles.splice(i, 1)[0]); // Recicla a particula
             i--;
@@ -765,4 +765,4 @@ createLight();
 createPlane();
 createParticle();
 loop();
-setInterval(flyParticle, 20); // Lança uma nova partícula à cada 20ms
+setInterval(flyParticle, 40); // Lança uma nova partícula à cada 40ms
