@@ -1,5 +1,4 @@
 import * as THREE from 'three'
-import { Plane } from 'three';
 import './style.css'
 
 // Variáveis de ambiente
@@ -620,7 +619,7 @@ const init = () => {
     /*
         Como vou reciclar as partículas, preciso saber os limites esquerdo e direito que elas podem voar sem desaparecer dentro do campo de visão da câmera.
         Assim que uma partícula está fora da visão da câmera, posso reciclá-la, ou seja, removê-la da matriz flyingParticles e colocá-la na matriz waitParticles.
-        Em vez disso, prefiro pré-calcular a coordenada x a partir da qual uma partícula não é mais visível. Mas isso depende da posição z da partícula.
+        Para isso, prefiro pré-calcular a coordenada x a partir da qual uma partícula não é mais visível. Mas isso depende da posição z da partícula.
         Aqui eu decidi usar a posição z mais distante possível para uma partícula, para ter certeza de que todas as partículas não serão recicladas antes de saírem da visão da câmera.
     */
 
