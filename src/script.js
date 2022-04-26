@@ -745,6 +745,17 @@ const loop = () => {
         }
     }
 
+    // Velocímetro
+    let speedometer = document.querySelector('span.speedometer');
+    let kmhSpeed = Math.floor(speed.x * 8);
+    speedometer.innerHTML = Math.max(300, kmhSpeed);
+    if(kmhSpeed >= 700) {
+        speedometer.classList.add("max_speed");
+    }
+    else {
+        speedometer.classList.remove("max_speed"); 
+    }
+
     renderer.render(scene, camera);
     requestAnimationFrame(loop);
 }
