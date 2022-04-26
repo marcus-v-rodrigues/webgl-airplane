@@ -748,7 +748,7 @@ const loop = () => {
     // Velocímetro
     let speedometer = document.querySelector('span.speedometer');
     let kmhSpeed = Math.floor(speed.x * 8);
-    speedometer.innerHTML = Math.max(300, kmhSpeed);
+    speedometer.innerHTML = Math.max(200, kmhSpeed);
     if(kmhSpeed >= 700) {
         speedometer.classList.add("max_speed");
     }
