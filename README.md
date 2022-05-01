@@ -1,14 +1,23 @@
+## Cabeçalho
+Marcus Vinícius Santos Rodrigues - 11218862 <br>
+Isadora Carolina Siebert - 11345580 <br>
+SCC0250 - Computação Gráfica I <br>
+Trabalho 1
+
 ## Setup
-Download [Node.js](https://nodejs.org/en/download/).
-Run this followed commands:
+Caso não tenha, instale [Node.js](https://nodejs.org/en/download/).
+Rode os seguintes comandos:
 
 ``` bash
-# Install dependencies (only the first time)
+# Instalar dependências (somente na primeira vez)
 npm install
 
-# Run the local server at localhost:8080
+# Rode o servidor local em localhost:8080
 npm run dev
-
-# Build for production in the dist/ directory
+```
+## Gerar arquivos para produção
+Caso queira hospedar a distribuição, rode o seguinte comando para gerar os arquivos:
+``` bash
+# Build para produção
 npm run build
 ```
