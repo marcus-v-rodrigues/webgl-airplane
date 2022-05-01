@@ -1,3 +1,8 @@
+// Marcus Vinícius Santos Rodrigues - 11218862
+// Isadora Carolina Siebert - 11345580
+// SCC0250 - Computação Gráfica I
+// Trabalho 1
+
 import * as THREE from 'three'
 import './style.css'
 
@@ -567,10 +572,11 @@ const createParticle = () => {
     });
 
     particle = new THREE.Mesh(geometryCore, materialCore);
+    particle.matrixAutoUpdate = false;
     return particle;
 }
 
-const getParticle = () => {
+const getParticle = () => { // Responsável por reutilizar, caso exista, as partículas
     if (waitingParticles.length) {
         return waitingParticles.pop();
     } else {
@@ -578,15 +584,17 @@ const getParticle = () => {
     }
 }
 
-const flyParticle = () => {
+const flyParticle = () => { // Responsável por setar a posição e escala inicial das partículas
     let particle = getParticle();
     // Seleciona a posição da particula de forma randômica, mas a inicia fora do campo de visão e a dá uma escala também randômica 
-    let x = xLimit,
+    let x = xLimit * 1.5,
         y = Math.random() * yLimit * 2 - yLimit,
-        z = Math.random() * maxParticlesZ * 2 + 1,
-        scale = .2 + Math.random();
-    particle.applyMatrix4(doTranslation(x, y, z));
+        z = Math.random() * maxParticlesZ,
+        scale = 0.5 + Math.random();
+    
+    particle.matrix = doTranslation(x, y, z); // Posiciona a particula para começar o movimento
     particle.applyMatrix4(doScale(scale, scale, scale));
+    particle.updateMatrix();
     flyingParticles.push(particle);
     scene.add(particle);
 }
@@ -599,7 +607,7 @@ const init = () => {
     aspectRatio = sizes.width / sizes.height;
     fieldOfView = 60;
     nearPlane = 1; // A câmera não vera nenhum objeto colocado à frente desse plano
-    farPlane = 3000; // A câmera não vera nenhum objeto além desse plano
+    farPlane = 5000; // A câmera não vera nenhum objeto além desse plano
     camera = new THREE.PerspectiveCamera(
         fieldOfView,
         aspectRatio,
@@ -727,17 +735,21 @@ const loop = () => {
         rotationQuaternionParticle = new THREE.Quaternion(),
         scaleParticle = new THREE.Vector3();
 
-        plane.matrix.decompose(translationParticle, rotationQuaternionParticle, scaleParticle);
+        particle.matrix.decompose(translationParticle, rotationQuaternionParticle, scaleParticle); //Decomposição da matrix de particle
+
+        let inverseScale = (1 / scaleParticle.x) // Inverso da escala de x da partícula
         
-        let x = -10 - (1 / scaleParticle.x) * speed.x * .4;
-        let y = (1 / scaleParticle.x) * speed.y;
-        let rotation = (1 / scaleParticle.x) / 200;
+        let x = -10 - inverseScale * speed.x * 0.5;
+        let y = inverseScale * speed.y * 0.5;
+        let rotation = inverseScale / 100;
 
-        particle.applyMatrix4(doRotationX(rotation*2));
         particle.applyMatrix4(doRotationY(rotation));
-        particle.applyMatrix4(doTranslation(x, y, 0));
+        particle.applyMatrix4(doRotationX(rotation));
+        particle.applyMatrix4(doTranslation(x, y, -translationParticle.z));
 
-        if (translationParticle.x < -xLimit / 2) { // Verifica se a partícula está fora do campo de visão
+        particle.updateMatrix();
+
+        if (translationParticle.x < -xLimit) { // Verifica se a partícula está fora do campo de visão
             scene.remove(particle);
             waitingParticles.push(flyingParticles.splice(i, 1)[0]); // Recicla a particula
             i--;
